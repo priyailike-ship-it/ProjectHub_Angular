@@ -9,4 +9,5 @@ import { RouterOutlet } from '@angular/router';
 })
 export class App {
   protected readonly title = signal('projecthub');
+  description = signal('A project management tool for developers and teams.');
 }
