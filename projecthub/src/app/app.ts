@@ -2,9 +2,11 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import{Task} from './task.model';
+import{TaskList} from './components/task-list/task-list';
+import {TaskSummary} from './components/task-summary/task-summary';
 type TaskFilter = 'all' | 'pending' | 'completed';
 @Component({
-  imports: [RouterOutlet,FormsModule],
+  imports: [FormsModule,TaskList,TaskSummary],
   selector: 'app-root',
   standalone: true,
   styleUrl: './app.scss',
@@ -21,7 +23,9 @@ export class App {
     { id: 3, title: 'Build task management API', completed: false },
     { id: 4, title: 'Write unit tests', completed: true }
   ];
-  get totalTasks(): number {
+  
+
+ get totalTasks(): number {
     return this.tasks.length;
   }
 
@@ -31,18 +35,6 @@ export class App {
 
   get pendingTasks(): number {
     return this.totalTasks - this.completedTasks;
-  }
-
-  get filteredTasks(): Task[] {
-    if (this.currentFilter === 'pending') {
-      return this.tasks.filter(task => !task.completed);
-    }
-
-    if (this.currentFilter === 'completed') {
-      return this.tasks.filter(task => task.completed);
-    }
-
-    return this.tasks;
   }
 
   addTask(): void {
@@ -71,10 +63,8 @@ export class App {
   }
 
   deleteTask(taskId: number): void {
-    this.tasks = this.tasks.filter(task => task.id !== taskId);
-  }
-
-  setFilter(filter: TaskFilter): void {
-    this.currentFilter = filter;
+    this.tasks = this.tasks.filter(
+      task => task.id !== taskId
+    );
   }
 }

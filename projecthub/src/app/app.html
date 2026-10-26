@@ -5,28 +5,18 @@
       <h1>{{ title }}</h1>
       <p>Manage your projects and tasks in one place.</p>
     </div>
+
     <span class="header-label">Task Manager</span>
   </header>
 
-  <section class="summary">
-    <article class="summary-card">
-      <span>Total tasks</span>
-      <strong>{{ totalTasks }}</strong>
-    </article>
+  <app-task-summary
+    [totalTasks]="totalTasks"
+    [pendingTasks]="pendingTasks"
+    [completedTasks]="completedTasks"
+  />
 
-    <article class="summary-card">
-      <span>Pending tasks</span>
-      <strong>{{ pendingTasks }}</strong>
-    </article>
-
-    <article class="summary-card">
-      <span>Completed tasks</span>
-      <strong>{{ completedTasks }}</strong>
-    </article>
-  </section>
-
-  <section class="task-panel">
-    <h2>My Tasks</h2>
+  <section class="add-task-panel">
+    <h2>Add a Task</h2>
 
     <form class="task-form" (ngSubmit)="addTask()">
       <input
@@ -45,66 +35,11 @@
         Add task
       </button>
     </form>
-
-    <nav class="filters" aria-label="Filter tasks">
-      <button
-        type="button"
-        [class.active]="currentFilter === 'all'"
-        (click)="setFilter('all')"
-      >
-        All
-      </button>
-
-      <button
-        type="button"
-        [class.active]="currentFilter === 'pending'"
-        (click)="setFilter('pending')"
-      >
-        Pending
-      </button>
-
-      <button
-        type="button"
-        [class.active]="currentFilter === 'completed'"
-        (click)="setFilter('completed')"
-      >
-        Completed
-      </button>
-    </nav>
-
-    <ul class="task-list">
-      @for (task of filteredTasks; track task.id) {
-        <li class="task-item">
-          <label class="task-description">
-            <input
-              type="checkbox"
-              [checked]="task.completed"
-              (change)="toggleTask(task.id)"
-            />
-
-            <span [class.completed]="task.completed">
-              {{ task.title }}
-            </span>
-          </label>
-
-          <button
-            type="button"
-            class="delete-button"
-            (click)="deleteTask(task.id)"
-            [attr.aria-label]="'Delete ' + task.title"
-          >
-            Delete
-          </button>
-        </li>
-      } @empty {
-        <li class="empty-state">
-          No tasks found. Add a new task to get started.
-        </li>
-      }
-    </ul>
-
-    <footer class="task-footer">
-      {{ completedTasks }} of {{ totalTasks }} tasks completed
-    </footer>
   </section>
+
+  <app-task-list
+    [tasks]="tasks"
+    (taskToggled)="toggleTask($event)"
+    (taskDeleted)="deleteTask($event)"
+  />
 </main>
