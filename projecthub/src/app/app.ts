@@ -4,7 +4,8 @@ import {FormsModule} from '@angular/forms';
 import{Task} from './task.model';
 import{TaskList} from './components/task-list/task-list';
 import {TaskSummary} from './components/task-summary/task-summary';
-type TaskFilter = 'all' | 'pending' | 'completed';
+import {Tasks} from './services/tasks';
+
 @Component({
   imports: [FormsModule,TaskList,TaskSummary],
   selector: 'app-root',
@@ -12,18 +13,16 @@ type TaskFilter = 'all' | 'pending' | 'completed';
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
+
 export class App {
   title = 'ProjectHub';
   
-   newTaskTitle = '';
-    currentFilter: TaskFilter = 'all';
-      tasks: Task[] = [
-    { id: 1, title: 'Design the dashboard', completed: true },
-    { id: 2, title: 'Create login page', completed: false },
-    { id: 3, title: 'Build task management API', completed: false },
-    { id: 4, title: 'Write unit tests', completed: true }
-  ];
-  
+     newTaskTitle = '';
+  tasks: Task[] = [];
+
+  constructor(private taskService: Tasks) {
+    this.refreshTasks();
+  }
 
  get totalTasks(): number {
     return this.tasks.length;
@@ -37,6 +36,10 @@ export class App {
     return this.totalTasks - this.completedTasks;
   }
 
+  refreshTasks(): void {
+    this.tasks = this.taskService.getTasks();
+  }
+
   addTask(): void {
     const title = this.newTaskTitle.trim();
 
@@ -44,27 +47,18 @@ export class App {
       return;
     }
 
-    const newTask: Task = {
-      id: Math.max(0, ...this.tasks.map(task => task.id)) + 1,
-      title,
-      completed: false
-    };
-
-    this.tasks = [...this.tasks, newTask];
+    this.taskService.addTask(title);
     this.newTaskTitle = '';
+    this.refreshTasks();
   }
 
   toggleTask(taskId: number): void {
-    this.tasks = this.tasks.map(task =>
-      task.id === taskId
-        ? { ...task, completed: !task.completed }
-        : task
-    );
+    this.taskService.toggleTask(taskId);
+    this.refreshTasks();
   }
 
   deleteTask(taskId: number): void {
-    this.tasks = this.tasks.filter(
-      task => task.id !== taskId
-    );
+    this.taskService.deleteTask(taskId);
+    this.refreshTasks();
   }
 }
